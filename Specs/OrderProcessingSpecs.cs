@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using Autofac;
+
 using FluentAssertions;
 using Xunit;
 
@@ -27,14 +27,9 @@ namespace Example.Specs
 
             await store.Store(cheapOrder);
             await store.Store(largeOrder);
-
-            var containerBuilder = new ContainerBuilder();
-            containerBuilder.RegisterType<TotalPriceBasedOrderValueStrategy>().AsImplementedInterfaces();
-            containerBuilder.RegisterInstance(store).AsImplementedInterfaces();
-            var container = containerBuilder.Build();
             
             // Act
-            var processing = new OrderProcessing(container);
+            var processing = new OrderProcessing(store, new TotalPriceBasedOrderValueStrategy());
             await processing.PrioritizeLargeOrders();
 
             // Assert

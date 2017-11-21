@@ -1,19 +1,18 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Autofac;
 
 namespace Example
 {
     public class OrderProcessing
     {
         private readonly IStoreOrders orderStorage;
-        private readonly IOrderValueStrategy valueStrategy; 
+        private readonly IOrderValueStrategy valueStrategy;
 
-        public OrderProcessing(IContainer container)
+        public OrderProcessing(IStoreOrders orderStorage, IOrderValueStrategy valueStrategy)
         {
-            orderStorage = container.Resolve<IStoreOrders>();
-            valueStrategy = container.Resolve<IOrderValueStrategy>();
+            this.orderStorage = orderStorage;
+            this.valueStrategy = valueStrategy;
         }
 
         public async Task PrioritizeLargeOrders()
