@@ -29,8 +29,8 @@ namespace Example.Specs
             await store.Store(largeOrder);
             
             // Act
-            var processing = new OrderProcessing(store, new TotalPriceBasedOrderValueStrategy());
-            await processing.PrioritizeLargeOrders();
+            var processing = new OrderProcessing(store);
+            await processing.PrioritizeLargeOrders(new TotalPriceBasedOrderValueStrategy());
 
             // Assert
             cheapOrder.IsCompleted.Should().BeFalse();

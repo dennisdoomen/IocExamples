@@ -7,15 +7,13 @@ namespace Example
     public class OrderProcessing
     {
         private readonly IStoreOrders orderStorage;
-        private readonly IOrderValueStrategy valueStrategy;
 
-        public OrderProcessing(IStoreOrders orderStorage, IOrderValueStrategy valueStrategy)
+        public OrderProcessing(IStoreOrders orderStorage)
         {
             this.orderStorage = orderStorage;
-            this.valueStrategy = valueStrategy;
         }
 
-        public async Task PrioritizeLargeOrders()
+        public async Task PrioritizeLargeOrders(IOrderValueStrategy valueStrategy)
         {
             IEnumerable<Order> orders = await orderStorage.GetIncompleted();
 

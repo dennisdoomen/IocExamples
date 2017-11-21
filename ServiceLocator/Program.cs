@@ -16,7 +16,7 @@ namespace Example
 
             var order = await orderProcessing.AcceptOrder("myOrder", 1000);
 
-            await orderProcessing.PrioritizeLargeOrders();
+            await orderProcessing.PrioritizeLargeOrders(new TotalPriceBasedOrderValueStrategy());
 
             Console.WriteLine($"Status of order {order.Id} is " + (order.IsCompleted ? "completed" : "incomplete"));
         }
@@ -26,7 +26,6 @@ namespace Example
             var containerBuilder = new ContainerBuilder();
             containerBuilder.RegisterSource(new AnyConcreteTypeNotAlreadyRegisteredSource());
             containerBuilder.RegisterType<PersistedStoreOrders>().AsImplementedInterfaces().SingleInstance();
-            containerBuilder.RegisterType<TotalPriceBasedOrderValueStrategy>().AsImplementedInterfaces().SingleInstance();
 
             IContainer container = containerBuilder.Build();
 
