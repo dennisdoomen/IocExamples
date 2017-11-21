@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Autofac;
-using Autofac.Extras.CommonServiceLocator;
 using Autofac.Features.ResolveAnything;
-using CommonServiceLocator;
+using IContainer = Autofac.IContainer;
 
 namespace Example
 {
@@ -31,7 +30,6 @@ namespace Example
 
             IContainer container = containerBuilder.Build();
 
-            ServiceLocator.SetLocatorProvider(() => new AutofacServiceLocator(container));
             return container;
         }
     }

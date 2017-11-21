@@ -9,7 +9,6 @@
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Autofac.Extras.CommonServiceLocator" Version="5.0.0" />
-    <PackageReference Include="CommonServiceLocator" Version="2.0.1" />
+    <PackageReference Include="Autofac" Version="4.6.2" />
   </ItemGroup>
 </Project>

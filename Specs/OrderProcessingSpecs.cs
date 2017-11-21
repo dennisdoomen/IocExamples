@@ -1,7 +1,5 @@
 ﻿using System.Threading.Tasks;
 using Autofac;
-using Autofac.Extras.CommonServiceLocator;
-using CommonServiceLocator;
 using FluentAssertions;
 using Xunit;
 
@@ -34,11 +32,9 @@ namespace Example.Specs
             containerBuilder.RegisterType<TotalPriceBasedOrderValueStrategy>().AsImplementedInterfaces();
             containerBuilder.RegisterInstance(store).AsImplementedInterfaces();
             var container = containerBuilder.Build();
-
-            ServiceLocator.SetLocatorProvider(() => new AutofacServiceLocator(container));
-
+            
             // Act
-            var processing = new OrderProcessing();
+            var processing = new OrderProcessing(container);
             await processing.PrioritizeLargeOrders();
 
             // Assert

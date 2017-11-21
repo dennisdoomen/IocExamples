@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using CommonServiceLocator;
+using Autofac;
 
 namespace Example
 {
@@ -10,10 +10,10 @@ namespace Example
         private readonly IStoreOrders orderStorage;
         private readonly IOrderValueStrategy valueStrategy; 
 
-        public OrderProcessing()
+        public OrderProcessing(IContainer container)
         {
-            orderStorage = ServiceLocator.Current.GetInstance<IStoreOrders>();
-            valueStrategy = ServiceLocator.Current.GetInstance<IOrderValueStrategy>();
+            orderStorage = container.Resolve<IStoreOrders>();
+            valueStrategy = container.Resolve<IOrderValueStrategy>();
         }
 
         public async Task PrioritizeLargeOrders()
