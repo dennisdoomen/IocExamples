@@ -25,7 +25,9 @@ namespace Example
         {
             var containerBuilder = new ContainerBuilder();
             containerBuilder.RegisterSource(new AnyConcreteTypeNotAlreadyRegisteredSource());
-            containerBuilder.RegisterType<PersistedStoreOrders>().AsImplementedInterfaces().SingleInstance();
+
+            containerBuilder.RegisterType<PersistedStoreOrders>().Keyed<IStoreOrders>(StorageLevel.Cold);
+            containerBuilder.RegisterType<PersistedStoreOrders>().Keyed<IStoreOrders>(StorageLevel.Hot);
 
             IContainer container = containerBuilder.Build();
 

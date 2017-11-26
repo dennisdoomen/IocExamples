@@ -20,11 +20,16 @@ namespace Example.Specs
             return Task.FromResult(0);
         }
 
-        public Task Deleteorder(string orderId)
+        public Task Delete(string orderId)
         {
             orders.RemoveAll(o => o.Id == orderId);
 
             return Task.FromResult(0);
+        }
+
+        public bool Contains(string orderId)
+        {
+            return orders.Any(o => o.Id == orderId);
         }
     }
 }

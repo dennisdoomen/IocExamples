@@ -20,7 +20,7 @@ namespace Example
             return Task.FromResult(0);
         }
 
-        public Task Deleteorder(string orderId)
+        public Task Delete(string orderId)
         {
             orders.RemoveAll(o => o.Id == orderId);
 

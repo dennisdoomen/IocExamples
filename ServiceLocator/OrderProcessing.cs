@@ -1,27 +1,29 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Autofac.Features.Indexed;
 
 namespace Example
 {
     public class OrderProcessing
     {
-        private readonly IStoreOrders orderStorage;
+        private readonly IIndex<StorageLevel, IStoreOrders> orderStorages;
 
-        public OrderProcessing(IStoreOrders orderStorage)
+        public OrderProcessing(IIndex<StorageLevel, IStoreOrders> orderStorages)
         {
-            this.orderStorage = orderStorage;
+            this.orderStorages = orderStorages;
         }
 
         public async Task PrioritizeLargeOrders(IOrderValueStrategy valueStrategy)
         {
-            IEnumerable<Order> orders = await orderStorage.GetIncompleted();
+            IEnumerable<Order> orders = await orderStorages[StorageLevel.Hot].GetIncompleted();
 
             foreach (var order in orders.Where(o => valueStrategy.IsHighValuedOrder(o)))
             {
                 order.Complete();
 
-                await orderStorage.Store(order);
+                await orderStorages[StorageLevel.Hot].Delete(order.Id);
+                await orderStorages[StorageLevel.Cold].Store(order);
             }
         }
 
@@ -33,7 +35,7 @@ namespace Example
                 TotalPrice = totalPrice
             };
 
-            await orderStorage.Store(order);
+            await orderStorages[StorageLevel.Hot].Store(order);
 
             return order;
         }

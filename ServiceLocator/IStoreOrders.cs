@@ -7,6 +7,6 @@ namespace Example
     {
         Task<IEnumerable<Order>> GetIncompleted();
         Task Store(Order order);
-        Task Deleteorder(string orderId);
+        Task Delete(string orderId);
     }
 }
