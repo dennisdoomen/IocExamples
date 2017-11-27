@@ -20,7 +20,7 @@ namespace Example
         {
             IEnumerable<Order> orders = await orderStorages(StorageLevel.Hot).GetIncompleted();
 
-            foreach (var order in orders.Where(o => valueStrategy.IsHighValuedOrder(o)))
+            foreach (var order in orders.Where(valueStrategy.IsHighValuedOrder))
             {
                 order.Complete();
 

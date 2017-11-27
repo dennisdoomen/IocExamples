@@ -11,15 +11,18 @@ namespace Example
     {
         public static async Task Main(string[] args)
         {
-            IContainer container = SetupContainer();
+            using (IContainer container = SetupContainer())
+            {
+                var orderProcessing = container.Resolve<OrderProcessing>();
 
-            var orderProcessing = container.Resolve<OrderProcessing>();
+                var order = await orderProcessing.AcceptOrder("myOrder", 1000);
 
-            var order = await orderProcessing.AcceptOrder("myOrder", 1000);
+                await orderProcessing.PrioritizeLargeOrders(new TotalPriceBasedOrderValueStrategy());
+                await orderProcessing.PrioritizeLargeOrders(new TotalPriceBasedOrderValueStrategy());
+                await orderProcessing.PrioritizeLargeOrders(new TotalPriceBasedOrderValueStrategy());
 
-            await orderProcessing.PrioritizeLargeOrders(new TotalPriceBasedOrderValueStrategy());
-
-            Console.WriteLine($"Status of order {order.Id} is " + (order.IsCompleted ? "completed" : "incomplete"));
+                Console.WriteLine($"Status of order {order.Id} is " + (order.IsCompleted ? "completed" : "incomplete"));
+            }
         }
 
         private static IContainer SetupContainer()

@@ -1,11 +1,18 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace Example
 {
-    public class PersistedStoreOrders : IStoreOrders
+    public class PersistedStoreOrders : IStoreOrders, IDisposable
     {
+        public PersistedStoreOrders()
+        {
+            Console.WriteLine($"PersistedStoreOrders {GetHashCode()} was created");
+        }
+
+
         private readonly List<Order> orders = new List<Order>();
 
         public Task<IEnumerable<Order>> GetIncompleted()
@@ -25,6 +32,11 @@ namespace Example
             orders.RemoveAll(o => o.Id == orderId);
 
             return Task.FromResult(0);
+        }
+
+        public void Dispose()
+        {
+            Console.WriteLine($"PersistedStoreOrders {GetHashCode()} was disposed");
         }
     }
 }
