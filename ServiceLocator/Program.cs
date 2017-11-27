@@ -25,17 +25,7 @@ namespace Example
         private static IContainer SetupContainer()
         {
             var containerBuilder = new ContainerBuilder();
-            containerBuilder.RegisterSource(new AnyConcreteTypeNotAlreadyRegisteredSource());
-
-            containerBuilder.RegisterType<PersistedStoreOrders>().Keyed<IStoreOrders>(StorageLevel.Cold);
-            containerBuilder.RegisterType<PersistedStoreOrders>().Keyed<IStoreOrders>(StorageLevel.Hot);
-            
-            containerBuilder.Register<GetStorage>(ctx =>
-            {
-                var cc = ctx.Resolve<IComponentContext>();
-                
-                return level => cc.ResolveKeyed<IStoreOrders>(level);
-            });
+            containerBuilder.RegisterModule<OrderProcessingModule>();
 
             IContainer container = containerBuilder.Build();
 

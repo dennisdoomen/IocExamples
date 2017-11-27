@@ -30,15 +30,15 @@ namespace Example.Specs
             await store.Store(cheapOrder);
             await store.Store(largeOrder);
 
-
-            var map = new Dictionary<StorageLevel, IStoreOrders>
-            {
-                { StorageLevel.Cold, store },
-                { StorageLevel.Hot, store}
-            };
+            var containerBuilder = new ContainerBuilder();
+            containerBuilder.RegisterModule<OrderProcessingModule>();
+            containerBuilder.RegisterInstance(store).Keyed<IStoreOrders>(StorageLevel.Cold);
+            containerBuilder.RegisterInstance(store).Keyed<IStoreOrders>(StorageLevel.Hot);
+            
+            var container = containerBuilder.Build();
             
             // Act
-            var processing = new OrderProcessing(level => map[level]);
+            var processing = container.Resolve<OrderProcessing>();
             await processing.PrioritizeLargeOrders(new TotalPriceBasedOrderValueStrategy());
 
             // Assert
@@ -60,15 +60,16 @@ namespace Example.Specs
             };
 
             await hotStorage.Store(theOrder);
-
-            var map = new Dictionary<StorageLevel, IStoreOrders>
-            {
-                { StorageLevel.Cold, coldStorage },
-                { StorageLevel.Hot, hotStorage }
-            };
-
+            
+            var containerBuilder = new ContainerBuilder();
+            containerBuilder.RegisterModule<OrderProcessingModule>();
+            containerBuilder.RegisterInstance(coldStorage).Keyed<IStoreOrders>(StorageLevel.Cold);
+            containerBuilder.RegisterInstance(hotStorage).Keyed<IStoreOrders>(StorageLevel.Hot);
+            
+            var container = containerBuilder.Build();
+            
             // Act
-            var processing = new OrderProcessing(level => map[level]);
+            var processing = container.Resolve<OrderProcessing>();
             await processing.PrioritizeLargeOrders(new TotalPriceBasedOrderValueStrategy());
 
             // Assert
