@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Autofac;
 using Autofac.Features.ResolveAnything;
@@ -28,6 +29,13 @@ namespace Example
 
             containerBuilder.RegisterType<PersistedStoreOrders>().Keyed<IStoreOrders>(StorageLevel.Cold);
             containerBuilder.RegisterType<PersistedStoreOrders>().Keyed<IStoreOrders>(StorageLevel.Hot);
+            
+            containerBuilder.Register<Func<StorageLevel, IStoreOrders>>(ctx =>
+            {
+                var cc = ctx.Resolve<IComponentContext>();
+                
+                return level => cc.ResolveKeyed<IStoreOrders>(level);
+            });
 
             IContainer container = containerBuilder.Build();
 

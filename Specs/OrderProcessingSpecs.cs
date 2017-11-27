@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Autofac;
 using Autofac.Features.ResolveAnything;
 using FluentAssertions;
@@ -29,14 +30,15 @@ namespace Example.Specs
             await store.Store(cheapOrder);
             await store.Store(largeOrder);
 
-            var containerBuilder = new ContainerBuilder();
-            containerBuilder.RegisterSource(new AnyConcreteTypeNotAlreadyRegisteredSource());
-            containerBuilder.RegisterInstance(store).Keyed<IStoreOrders>(StorageLevel.Cold);
-            containerBuilder.RegisterInstance(store).Keyed<IStoreOrders>(StorageLevel.Hot);
-            var container = containerBuilder.Build();
 
+            var map = new Dictionary<StorageLevel, IStoreOrders>
+            {
+                { StorageLevel.Cold, store },
+                { StorageLevel.Hot, store}
+            };
+            
             // Act
-            var processing = container.Resolve<OrderProcessing>();
+            var processing = new OrderProcessing(level => map[level]);
             await processing.PrioritizeLargeOrders(new TotalPriceBasedOrderValueStrategy());
 
             // Assert
@@ -59,14 +61,14 @@ namespace Example.Specs
 
             await hotStorage.Store(theOrder);
 
-            var containerBuilder = new ContainerBuilder();
-            containerBuilder.RegisterSource(new AnyConcreteTypeNotAlreadyRegisteredSource());
-            containerBuilder.RegisterInstance(coldStorage).Keyed<IStoreOrders>(StorageLevel.Cold);
-            containerBuilder.RegisterInstance(hotStorage).Keyed<IStoreOrders>(StorageLevel.Hot);
-            var container = containerBuilder.Build();
+            var map = new Dictionary<StorageLevel, IStoreOrders>
+            {
+                { StorageLevel.Cold, coldStorage },
+                { StorageLevel.Hot, hotStorage }
+            };
 
             // Act
-            var processing = container.Resolve<OrderProcessing>();
+            var processing = new OrderProcessing(level => map[level]);
             await processing.PrioritizeLargeOrders(new TotalPriceBasedOrderValueStrategy());
 
             // Assert
