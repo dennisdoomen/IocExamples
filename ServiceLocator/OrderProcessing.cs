@@ -5,11 +5,13 @@ using System.Threading.Tasks;
 
 namespace Example
 {
+    public delegate IStoreOrders GetStorage(StorageLevel level);
+    
     public class OrderProcessing
     {
-        private readonly Func<StorageLevel, IStoreOrders> orderStorages;
+        private readonly GetStorage orderStorages;
 
-        public OrderProcessing(Func<StorageLevel, IStoreOrders> orderStorages)
+        public OrderProcessing(GetStorage orderStorages)
         {
             this.orderStorages = orderStorages;
         }

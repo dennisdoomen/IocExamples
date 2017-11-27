@@ -30,7 +30,7 @@ namespace Example
             containerBuilder.RegisterType<PersistedStoreOrders>().Keyed<IStoreOrders>(StorageLevel.Cold);
             containerBuilder.RegisterType<PersistedStoreOrders>().Keyed<IStoreOrders>(StorageLevel.Hot);
             
-            containerBuilder.Register<Func<StorageLevel, IStoreOrders>>(ctx =>
+            containerBuilder.Register<GetStorage>(ctx =>
             {
                 var cc = ctx.Resolve<IComponentContext>();
                 
