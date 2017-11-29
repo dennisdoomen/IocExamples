@@ -9,8 +9,8 @@ namespace Example
         {
             builder.RegisterSource(new AnyConcreteTypeNotAlreadyRegisteredSource());
 
-            builder.RegisterType<PersistedStoreOrders>().Keyed<IStoreOrders>(StorageLevel.Cold);
-            builder.RegisterType<PersistedStoreOrders>().Keyed<IStoreOrders>(StorageLevel.Hot);
+            builder.RegisterType<PersistedStoreOrders>().Keyed<IStoreOrders>(StorageLevel.Cold).SingleInstance();
+            builder.RegisterType<PersistedStoreOrders>().Keyed<IStoreOrders>(StorageLevel.Hot).SingleInstance();
             
             builder.Register<GetStorage>(ctx =>
             {

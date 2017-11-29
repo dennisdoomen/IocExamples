@@ -29,6 +29,7 @@ namespace Example
         {
             var containerBuilder = new ContainerBuilder();
             containerBuilder.RegisterModule<OrderProcessingModule>();
+            containerBuilder.RegisterModule<DateTimeModule>();
 
             IContainer container = containerBuilder.Build();
 

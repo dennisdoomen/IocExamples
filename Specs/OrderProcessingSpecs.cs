@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Autofac;
-using Autofac.Features.ResolveAnything;
 using FluentAssertions;
 using Xunit;
 
@@ -30,20 +30,21 @@ namespace Example.Specs
             await store.Store(cheapOrder);
             await store.Store(largeOrder);
 
-            var containerBuilder = new ContainerBuilder();
-            containerBuilder.RegisterModule<OrderProcessingModule>();
-            containerBuilder.RegisterInstance(store).Keyed<IStoreOrders>(StorageLevel.Cold);
-            containerBuilder.RegisterInstance(store).Keyed<IStoreOrders>(StorageLevel.Hot);
-            
-            var container = containerBuilder.Build();
+            var map = new Dictionary<StorageLevel, IStoreOrders>
+            {
+                { StorageLevel.Cold, store },
+                { StorageLevel.Hot, store}
+            };
             
             // Act
-            var processing = container.Resolve<OrderProcessing>();
+            DateTime now = 29.November(2017).At(14, 33);
+            
+            var processing = new OrderProcessing(level => map[level], () => now);
             await processing.PrioritizeLargeOrders(new TotalPriceBasedOrderValueStrategy());
 
             // Assert
-            cheapOrder.IsCompleted.Should().BeFalse();
-            largeOrder.IsCompleted.Should().BeTrue();
+            cheapOrder.CompletedAt.Should().BeNull();
+            largeOrder.CompletedAt.Should().Be(now);
         }
 
         [Fact]
@@ -60,16 +61,15 @@ namespace Example.Specs
             };
 
             await hotStorage.Store(theOrder);
-            
-            var containerBuilder = new ContainerBuilder();
-            containerBuilder.RegisterModule<OrderProcessingModule>();
-            containerBuilder.RegisterInstance(coldStorage).Keyed<IStoreOrders>(StorageLevel.Cold);
-            containerBuilder.RegisterInstance(hotStorage).Keyed<IStoreOrders>(StorageLevel.Hot);
-            
-            var container = containerBuilder.Build();
-            
+
+            var map = new Dictionary<StorageLevel, IStoreOrders>
+            {
+                { StorageLevel.Cold, coldStorage },
+                { StorageLevel.Hot, hotStorage }
+            };
+
             // Act
-            var processing = container.Resolve<OrderProcessing>();
+            var processing = new OrderProcessing(level => map[level], () => DateTime.Now);
             await processing.PrioritizeLargeOrders(new TotalPriceBasedOrderValueStrategy());
 
             // Assert

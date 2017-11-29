@@ -10,10 +10,12 @@ namespace Example
     public class OrderProcessing
     {
         private readonly GetStorage orderStorages;
+        private readonly GetNow getNow;
 
-        public OrderProcessing(GetStorage orderStorages)
+        public OrderProcessing(GetStorage orderStorages, GetNow getNow)
         {
             this.orderStorages = orderStorages;
+            this.getNow = getNow;
         }
 
         public async Task PrioritizeLargeOrders(IOrderValueStrategy valueStrategy)
@@ -22,7 +24,7 @@ namespace Example
 
             foreach (var order in orders.Where(valueStrategy.IsHighValuedOrder))
             {
-                order.Complete();
+                order.Complete(getNow);
 
                 await orderStorages(StorageLevel.Hot).Delete(order.Id);
                 await orderStorages(StorageLevel.Cold).Store(order);
